@@ -1,0 +1,186 @@
+{
+	"name": "NestedCollections",
+	"properties": {
+		"activities": [
+			{
+				"name": "C4CtoSQLServer",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "HttpReadSettings",
+							"requestMethod": "GET",
+							"additionalHeaders": "Accept: application/json",
+							"requestTimeout": ""
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"tableOption": "autoCreate"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "['ObjectID']"
+								},
+								"sink": {
+									"name": "ObjectID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['ParentObjectID']"
+								},
+								"sink": {
+									"name": "ParentObjectID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['ETag']"
+								},
+								"sink": {
+									"name": "ETag",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['QuestionRefID']"
+								},
+								"sink": {
+									"name": "QuestionRefID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['AnswerRefID']"
+								},
+								"sink": {
+									"name": "AnswerRefID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['AmountValue']['currencyCode']"
+								},
+								"sink": {
+									"name": "AmountValue_currencyCode",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['AmountValue']['content']"
+								},
+								"sink": {
+									"name": "AmountValue_content",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['DateValue']"
+								},
+								"sink": {
+									"name": "DateValue",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['Indicator']"
+								},
+								"sink": {
+									"name": "Indicator",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['QuantityValue']['unitCode']"
+								},
+								"sink": {
+									"name": "QuantityValue_unitCode",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['QuantityValue']['content']"
+								},
+								"sink": {
+									"name": "QuantityValue_content",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['TextValue']['languageCode']"
+								},
+								"sink": {
+									"name": "TextValue_languageCode",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['TextValue']['content']"
+								},
+								"sink": {
+									"name": "TextValue_content",
+									"type": "String"
+								}
+							}
+						],
+						"collectionReference": "$['d']['results']",
+						"mapComplexValuesToString": true
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_SAP_C4C_Standard",
+						"type": "DatasetReference",
+						"parameters": {
+							"Collection_Name": "AnswersCollection"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_SQL_SERVER",
+						"type": "DatasetReference",
+						"parameters": {
+							"Table_Name": "AnswersCollection",
+							"Schema_Name": "dbo"
+						}
+					}
+				]
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2021-07-19T09:05:43Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,16 @@
+{
+	"name": "DS_SapCloudForCustomerResource",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_SapCloudForCustomer",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SapCloudForCustomerResource",
+		"schema": [],
+		"typeProperties": {
+			"path": "AnswersCollection"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,305 @@
+{
+	"name": "NestedCollectionUsingxml",
+	"properties": {
+		"activities": [
+			{
+				"name": "C4CtoSQLServer",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "UpdateLog",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "XmlSource",
+						"storeSettings": {
+							"type": "HttpReadSettings",
+							"requestMethod": "GET"
+						},
+						"formatSettings": {
+							"type": "XmlReadSettings",
+							"validationMode": "none",
+							"namespaces": true
+						}
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"writeBehavior": "insert",
+						"tableOption": "autoCreate"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "['content']['m:properties']['d:ObjectID']"
+								},
+								"sink": {
+									"name": "ObjectID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['content']['m:properties']['d:ParentObjectID']"
+								},
+								"sink": {
+									"name": "ParentObjectID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['content']['m:properties']['d:ETag']"
+								},
+								"sink": {
+									"name": "ETag",
+									"type": "DateTimeOffset"
+								}
+							},
+							{
+								"source": {
+									"path": "['content']['m:properties']['d:QuestionRefID']"
+								},
+								"sink": {
+									"name": "QuestionRefID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['content']['m:properties']['d:AnswerRefID']['m:@null']"
+								},
+								"sink": {
+									"name": "AnswerRefID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['content']['m:properties']['d:AmountValue']['d:currencyCode']"
+								},
+								"sink": {
+									"name": "AmountValue_currencyCode",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['content']['m:properties']['d:AmountValue']['d:content']"
+								},
+								"sink": {
+									"name": "AmountValue_content",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['content']['m:properties']['d:DateValue']['m:@null']"
+								},
+								"sink": {
+									"name": "DateValue",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['content']['m:properties']['d:Indicator']"
+								},
+								"sink": {
+									"name": "Indicator",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['content']['m:properties']['d:QuantityValue']['d:unitCode']"
+								},
+								"sink": {
+									"name": "QuantityValue_unitCode",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['content']['m:properties']['d:QuantityValue']['d:content']"
+								},
+								"sink": {
+									"name": "QuantityValue_content",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['content']['m:properties']['d:TextValue']['d:languageCode']"
+								},
+								"sink": {
+									"name": "TextValue_languageCode",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['content']['m:properties']['d:TextValue']['d:content']"
+								},
+								"sink": {
+									"name": "TextValue_content",
+									"type": "String"
+								}
+							}
+						],
+						"collectionReference": "$['feed']['entry']",
+						"mapComplexValuesToString": true
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_Xml",
+						"type": "DatasetReference",
+						"parameters": {
+							"Collection_Name": "AnswersCollection"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_SQL_SERVER",
+						"type": "DatasetReference",
+						"parameters": {
+							"Table_Name": "AnswersCollection_XML",
+							"Schema_Name": "dbo"
+						}
+					}
+				]
+			},
+			{
+				"name": "UpdateLog",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": {
+							"value": "INSERT INTO dbo.JobLog (\n    JobName,\n    JobStatus,\n    CallingModule\n) OUTPUT INSERTED.JobStatus Values (\n    '@{pipeline().Pipeline}',\n    'Running',\n    '@{pipeline().RunId}' \n)",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_SQL_SERVER",
+						"type": "DatasetReference",
+						"parameters": {
+							"Table_Name": ".",
+							"Schema_Name": "."
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "Lookup1",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "C4CtoSQLServer",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": {
+							"value": "Update dbo.JobLog\nSET JobStatus = 'Successful'\nOUTPUT 1 WHERE \nCallingModule = '@{pipeline().RunId}'\n;",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_SQL_SERVER",
+						"type": "DatasetReference",
+						"parameters": {
+							"Table_Name": ".",
+							"Schema_Name": "."
+						}
+					}
+				}
+			},
+			{
+				"name": "Error Log",
+				"description": "",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "C4CtoSQLServer",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": {
+							"value": "Update dbo.JobLog\nSET JobStatus\n= '@{REPLACE(activity('C4CtoSQLServer').Error.Message,'''','')}' \nOUTPUT 1 WHERE \nCallingModule='@{pipeline().RunId}'\n;",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_SQL_SERVER",
+						"type": "DatasetReference",
+						"parameters": {
+							"Table_Name": ".",
+							"Schema_Name": "."
+						}
+					}
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2021-10-28T09:23:36Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

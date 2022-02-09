@@ -1,0 +1,26 @@
+{
+	"name": "DS_Xml",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_SAP_C4C_DEV_Standard",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"Collection_Name": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Xml",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": {
+					"value": "@dataset().Collection_Name",
+					"type": "Expression"
+				}
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
