@@ -1,0 +1,112 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "Learning-adfYuvraj"
+		},
+		"LS_SAP_C4C_DEV_Standard_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'LS_SAP_C4C_DEV_Standard'"
+		},
+		"LS_SAP_C4C_QA_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'LS_SAP_C4C_QA'"
+		},
+		"LS_SapCloudForCustomer_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'LS_SapCloudForCustomer'"
+		},
+		"LS_SqlServer_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_SqlServer'"
+		},
+		"LS_SAP_C4C_DEV_Standard_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://my351174.crm.ondemand.com/sap/c4c/odata/v1/c4codataapi/"
+		},
+		"LS_SAP_C4C_DEV_Standard_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "MSADF"
+		},
+		"LS_SAP_C4C_QA_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://my344491.crm.ondemand.com/sap/c4c/odata/v1/c4codataapi/"
+		},
+		"LS_SAP_C4C_QA_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "MSADF"
+		},
+		"LS_SapCloudForCustomer_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://my351174.crm.ondemand.com/sap/c4c/odata/v1/c4codataapi/"
+		},
+		"LS_SapCloudForCustomer_properties_typeProperties_username": {
+			"type": "string",
+			"defaultValue": "MSADF"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "Learning-adfYuvraj_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"LS_SAP_C4C_DEV_Standard_password": {
+						"value": "[parameters('LS_SAP_C4C_DEV_Standard_password')]"
+					},
+					"LS_SAP_C4C_QA_password": {
+						"value": "[parameters('LS_SAP_C4C_QA_password')]"
+					},
+					"LS_SapCloudForCustomer_password": {
+						"value": "[parameters('LS_SapCloudForCustomer_password')]"
+					},
+					"LS_SqlServer_connectionString": {
+						"value": "[parameters('LS_SqlServer_connectionString')]"
+					},
+					"LS_SAP_C4C_DEV_Standard_properties_typeProperties_url": {
+						"value": "[parameters('LS_SAP_C4C_DEV_Standard_properties_typeProperties_url')]"
+					},
+					"LS_SAP_C4C_DEV_Standard_properties_typeProperties_userName": {
+						"value": "[parameters('LS_SAP_C4C_DEV_Standard_properties_typeProperties_userName')]"
+					},
+					"LS_SAP_C4C_QA_properties_typeProperties_url": {
+						"value": "[parameters('LS_SAP_C4C_QA_properties_typeProperties_url')]"
+					},
+					"LS_SAP_C4C_QA_properties_typeProperties_userName": {
+						"value": "[parameters('LS_SAP_C4C_QA_properties_typeProperties_userName')]"
+					},
+					"LS_SapCloudForCustomer_properties_typeProperties_url": {
+						"value": "[parameters('LS_SapCloudForCustomer_properties_typeProperties_url')]"
+					},
+					"LS_SapCloudForCustomer_properties_typeProperties_username": {
+						"value": "[parameters('LS_SapCloudForCustomer_properties_typeProperties_username')]"
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}

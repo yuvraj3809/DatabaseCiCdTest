@@ -1,0 +1,844 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "Learning-adfYuvraj"
+		},
+		"LS_SAP_C4C_DEV_Standard_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'LS_SAP_C4C_DEV_Standard'"
+		},
+		"LS_SAP_C4C_QA_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'LS_SAP_C4C_QA'"
+		},
+		"LS_SapCloudForCustomer_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'LS_SapCloudForCustomer'"
+		},
+		"LS_SqlServer_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_SqlServer'"
+		},
+		"LS_SAP_C4C_DEV_Standard_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://my351174.crm.ondemand.com/sap/c4c/odata/v1/c4codataapi/"
+		},
+		"LS_SAP_C4C_DEV_Standard_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "MSADF"
+		},
+		"LS_SAP_C4C_QA_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://my344491.crm.ondemand.com/sap/c4c/odata/v1/c4codataapi/"
+		},
+		"LS_SAP_C4C_QA_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "MSADF"
+		},
+		"LS_SapCloudForCustomer_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://my351174.crm.ondemand.com/sap/c4c/odata/v1/c4codataapi/"
+		},
+		"LS_SapCloudForCustomer_properties_typeProperties_username": {
+			"type": "string",
+			"defaultValue": "MSADF"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/NestedCollectionUsingxml')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "C4CtoSQLServer",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "UpdateLog",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "XmlSource",
+								"storeSettings": {
+									"type": "HttpReadSettings",
+									"requestMethod": "GET"
+								},
+								"formatSettings": {
+									"type": "XmlReadSettings",
+									"validationMode": "none",
+									"namespaces": true
+								}
+							},
+							"sink": {
+								"type": "SqlServerSink",
+								"writeBehavior": "insert",
+								"tableOption": "autoCreate"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"path": "[['content']['m:properties']['d:ObjectID']"
+										},
+										"sink": {
+											"name": "ObjectID",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['content']['m:properties']['d:ParentObjectID']"
+										},
+										"sink": {
+											"name": "ParentObjectID",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['content']['m:properties']['d:ETag']"
+										},
+										"sink": {
+											"name": "ETag",
+											"type": "DateTimeOffset"
+										}
+									},
+									{
+										"source": {
+											"path": "[['content']['m:properties']['d:QuestionRefID']"
+										},
+										"sink": {
+											"name": "QuestionRefID",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['content']['m:properties']['d:AnswerRefID']['m:@null']"
+										},
+										"sink": {
+											"name": "AnswerRefID",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['content']['m:properties']['d:AmountValue']['d:currencyCode']"
+										},
+										"sink": {
+											"name": "AmountValue_currencyCode",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['content']['m:properties']['d:AmountValue']['d:content']"
+										},
+										"sink": {
+											"name": "AmountValue_content",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['content']['m:properties']['d:DateValue']['m:@null']"
+										},
+										"sink": {
+											"name": "DateValue",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['content']['m:properties']['d:Indicator']"
+										},
+										"sink": {
+											"name": "Indicator",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['content']['m:properties']['d:QuantityValue']['d:unitCode']"
+										},
+										"sink": {
+											"name": "QuantityValue_unitCode",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['content']['m:properties']['d:QuantityValue']['d:content']"
+										},
+										"sink": {
+											"name": "QuantityValue_content",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['content']['m:properties']['d:TextValue']['d:languageCode']"
+										},
+										"sink": {
+											"name": "TextValue_languageCode",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['content']['m:properties']['d:TextValue']['d:content']"
+										},
+										"sink": {
+											"name": "TextValue_content",
+											"type": "String"
+										}
+									}
+								],
+								"collectionReference": "$['feed']['entry']",
+								"mapComplexValuesToString": true
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "DS_Xml",
+								"type": "DatasetReference",
+								"parameters": {
+									"Collection_Name": "AnswersCollection"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "DS_SQL_SERVER",
+								"type": "DatasetReference",
+								"parameters": {
+									"Table_Name": "AnswersCollection_XML",
+									"Schema_Name": "dbo"
+								}
+							}
+						]
+					},
+					{
+						"name": "UpdateLog",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": {
+									"value": "INSERT INTO dbo.JobLog (\n    JobName,\n    JobStatus,\n    CallingModule\n) OUTPUT INSERTED.JobStatus Values (\n    '@{pipeline().Pipeline}',\n    'Running',\n    '@{pipeline().RunId}' \n)",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "DS_SQL_SERVER",
+								"type": "DatasetReference",
+								"parameters": {
+									"Table_Name": ".",
+									"Schema_Name": "."
+								}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "Lookup1",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "C4CtoSQLServer",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": {
+									"value": "Update dbo.JobLog\nSET JobStatus = 'Successful'\nOUTPUT 1 WHERE \nCallingModule = '@{pipeline().RunId}'\n;",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "DS_SQL_SERVER",
+								"type": "DatasetReference",
+								"parameters": {
+									"Table_Name": ".",
+									"Schema_Name": "."
+								}
+							}
+						}
+					},
+					{
+						"name": "Error Log",
+						"description": "",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "C4CtoSQLServer",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": {
+									"value": "Update dbo.JobLog\nSET JobStatus\n= '@{REPLACE(activity('C4CtoSQLServer').Error.Message,'''','')}' \nOUTPUT 1 WHERE \nCallingModule='@{pipeline().RunId}'\n;",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "DS_SQL_SERVER",
+								"type": "DatasetReference",
+								"parameters": {
+									"Table_Name": ".",
+									"Schema_Name": "."
+								}
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-10-28T09:23:36Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DS_Xml')]",
+				"[concat(variables('factoryId'), '/datasets/DS_SQL_SERVER')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/NestedCollections')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "C4CtoSQLServer",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "JsonSource",
+								"storeSettings": {
+									"type": "HttpReadSettings",
+									"requestMethod": "GET",
+									"additionalHeaders": "Accept: application/json",
+									"requestTimeout": ""
+								},
+								"formatSettings": {
+									"type": "JsonReadSettings"
+								}
+							},
+							"sink": {
+								"type": "SqlServerSink",
+								"writeBehavior": "insert",
+								"tableOption": "autoCreate"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"path": "[['ObjectID']"
+										},
+										"sink": {
+											"name": "ObjectID",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['ParentObjectID']"
+										},
+										"sink": {
+											"name": "ParentObjectID",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['ETag']"
+										},
+										"sink": {
+											"name": "ETag",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['QuestionRefID']"
+										},
+										"sink": {
+											"name": "QuestionRefID",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['AnswerRefID']"
+										},
+										"sink": {
+											"name": "AnswerRefID",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['AmountValue']['currencyCode']"
+										},
+										"sink": {
+											"name": "AmountValue_currencyCode",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['AmountValue']['content']"
+										},
+										"sink": {
+											"name": "AmountValue_content",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['DateValue']"
+										},
+										"sink": {
+											"name": "DateValue",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['Indicator']"
+										},
+										"sink": {
+											"name": "Indicator",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['QuantityValue']['unitCode']"
+										},
+										"sink": {
+											"name": "QuantityValue_unitCode",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['QuantityValue']['content']"
+										},
+										"sink": {
+											"name": "QuantityValue_content",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['TextValue']['languageCode']"
+										},
+										"sink": {
+											"name": "TextValue_languageCode",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "[['TextValue']['content']"
+										},
+										"sink": {
+											"name": "TextValue_content",
+											"type": "String"
+										}
+									}
+								],
+								"collectionReference": "$['d']['results']",
+								"mapComplexValuesToString": true
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "DS_SAP_C4C_Standard",
+								"type": "DatasetReference",
+								"parameters": {
+									"Collection_Name": "AnswersCollection"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "DS_SQL_SERVER",
+								"type": "DatasetReference",
+								"parameters": {
+									"Table_Name": "AnswersCollection",
+									"Schema_Name": "dbo"
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-07-19T09:05:43Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DS_SAP_C4C_Standard')]",
+				"[concat(variables('factoryId'), '/datasets/DS_SQL_SERVER')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_SAP_C4C_Standard')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_SAP_C4C_DEV_Standard",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"Collection_Name": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "HttpServerLocation",
+						"relativeUrl": {
+							"value": "@dataset().Collection_Name",
+							"type": "Expression"
+						}
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_SAP_C4C_DEV_Standard')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_SAP_QA')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_SAP_C4C_QA",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"SourceCollection": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Xml",
+				"typeProperties": {
+					"location": {
+						"type": "HttpServerLocation",
+						"relativeUrl": {
+							"value": "@dataset().SourceCollection",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_SAP_C4C_QA')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_SAP_QA_JSON')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_SAP_C4C_QA",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"SourceCollection": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "HttpServerLocation",
+						"relativeUrl": {
+							"value": "@dataset().SourceCollection",
+							"type": "Expression"
+						}
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_SAP_C4C_QA')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_SQL_SERVER')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_SqlServer",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"Table_Name": {
+						"type": "string"
+					},
+					"Schema_Name": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().Schema_Name",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().Table_Name",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_SqlServer')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_SapCloudForCustomerResource')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_SapCloudForCustomer",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SapCloudForCustomerResource",
+				"schema": [],
+				"typeProperties": {
+					"path": "AnswersCollection"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_SapCloudForCustomer')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_Xml')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_SAP_C4C_DEV_Standard",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"Collection_Name": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Xml",
+				"typeProperties": {
+					"location": {
+						"type": "HttpServerLocation",
+						"relativeUrl": {
+							"value": "@dataset().Collection_Name",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_SAP_C4C_DEV_Standard')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LS_SAP_C4C_DEV_Standard')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "HttpServer",
+				"typeProperties": {
+					"url": "[parameters('LS_SAP_C4C_DEV_Standard_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Basic",
+					"userName": "[parameters('LS_SAP_C4C_DEV_Standard_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('LS_SAP_C4C_DEV_Standard_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LS_SAP_C4C_QA')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "HttpServer",
+				"typeProperties": {
+					"url": "[parameters('LS_SAP_C4C_QA_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Basic",
+					"userName": "[parameters('LS_SAP_C4C_QA_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('LS_SAP_C4C_QA_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LS_SapCloudForCustomer')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "SapCloudForCustomer",
+				"typeProperties": {
+					"url": "[parameters('LS_SapCloudForCustomer_properties_typeProperties_url')]",
+					"username": "[parameters('LS_SapCloudForCustomer_properties_typeProperties_username')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('LS_SapCloudForCustomer_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LS_SqlServer')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "SqlServer",
+				"typeProperties": {
+					"connectionString": "[parameters('LS_SqlServer_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/default')]",
+			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks",
+			"apiVersion": "2018-06-01",
+			"properties": {},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Test')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Wait1",
+						"type": "Wait",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": 1
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		}
+	]
+}

@@ -1,0 +1,45 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "Learning-adfYuvraj"
+		},
+		"LS_SAP_C4C_DEV_Standard_password": {
+			"value": ""
+		},
+		"LS_SAP_C4C_QA_password": {
+			"value": ""
+		},
+		"LS_SapCloudForCustomer_password": {
+			"value": ""
+		},
+		"LS_SqlServer_connectionString": {
+			"value": ""
+		},
+		"LS_SAP_C4C_DEV_Standard_properties_typeProperties_url": {
+			"value": "https://my351174.crm.ondemand.com/sap/c4c/odata/v1/c4codataapi/"
+		},
+		"LS_SAP_C4C_DEV_Standard_properties_typeProperties_userName": {
+			"value": "MSADF"
+		},
+		"LS_SAP_C4C_QA_properties_typeProperties_url": {
+			"value": "https://my344491.crm.ondemand.com/sap/c4c/odata/v1/c4codataapi/"
+		},
+		"LS_SAP_C4C_QA_properties_typeProperties_userName": {
+			"value": "MSADF"
+		},
+		"LS_SapCloudForCustomer_properties_typeProperties_url": {
+			"value": "https://my351174.crm.ondemand.com/sap/c4c/odata/v1/c4codataapi/"
+		},
+		"LS_SapCloudForCustomer_properties_typeProperties_username": {
+			"value": "MSADF"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}
